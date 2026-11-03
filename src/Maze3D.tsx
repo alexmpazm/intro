@@ -64,7 +64,7 @@ export function Maze3D({ maze, visited, path }: { maze: Maze; visited: number[];
 
   const visitedBoxes = useMemo(() => visited.map(floorTile(0.08, cols, rows)), [visited, cols, rows])
   const pathBoxes = useMemo(() => path.map(floorTile(0.3, cols, rows)), [path, cols, rows])
-  const endpoints = useMemo(() => [0, cols * rows - 1].map(floorTile(0.6, cols, rows)), [cols, rows])
+  const endpoints = useMemo(() => [maze.start, maze.goal].map(floorTile(0.6, cols, rows)), [maze.start, maze.goal, cols, rows])
 
   return (
     <Canvas camera={{ position: [0, 26, 20], fov: 45 }}>

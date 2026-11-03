@@ -1,5 +1,5 @@
 export type Cell = { top: boolean; right: boolean; bottom: boolean; left: boolean }
-export type Maze = { cols: number; rows: number; cells: Cell[] } // index = y * cols + x
+export type Maze = { cols: number; rows: number; cells: Cell[]; start: number; goal: number } // index = y * cols + x
 export type Algo = 'bfs' | 'dfs' | 'astar'
 export type SolveResult = { visited: number[]; path: number[] }
 
@@ -31,11 +31,26 @@ function carve(maze: Maze, i: number, d: (typeof DIRS)[number], n: number) {
   maze.cells[n][d.opposite] = false
 }
 
+/** Two random distinct cells, at least half the maze apart so the puzzle isn't trivial. */
+function pickEndpoints(cols: number, rows: number): [number, number] {
+  const minDistance = Math.floor((cols + rows) / 2)
+  const distance = (a: number, b: number) =>
+    Math.abs((a % cols) - (b % cols)) + Math.abs(Math.floor(a / cols) - Math.floor(b / cols))
+  for (;;) {
+    const a = Math.floor(Math.random() * cols * rows)
+    const b = Math.floor(Math.random() * cols * rows)
+    if (distance(a, b) >= minDistance) return [a, b]
+  }
+}
+
 /** Random maze (depth-first backtracker). `loops` is the share of extra walls removed, so there are several routes. */
 export function generateMaze(cols: number, rows: number, loops = 0.08): Maze {
+  const [start, goal] = pickEndpoints(cols, rows)
   const maze: Maze = {
     cols,
     rows,
+    start,
+    goal,
     cells: Array.from({ length: cols * rows }, () => ({
       top: true,
       right: true,
@@ -79,12 +94,11 @@ function openNeighbours(maze: Maze, i: number): number[] {
   })
 }
 
-/** Search from the top-left to the bottom-right cell. `visited` is the order cells were explored in. */
+/** Search from `maze.start` to `maze.goal`. `visited` is the order cells were explored in. */
 export function solve(maze: Maze, algo: Algo): SolveResult {
-  const { cols, rows } = maze
-  const start = 0
-  const goal = cols * rows - 1
-  const heuristic = (i: number) => Math.abs((i % cols) - (cols - 1)) + Math.abs(Math.floor(i / cols) - (rows - 1))
+  const { cols, start, goal } = maze
+  const heuristic = (i: number) =>
+    Math.abs((i % cols) - (goal % cols)) + Math.abs(Math.floor(i / cols) - Math.floor(goal / cols))
 
   const cost = new Map<number, number>([[start, 0]])
   const parent = new Map<number, number>()
