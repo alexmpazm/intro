@@ -1,32 +1,59 @@
-# React + TypeScript + Vite
+# Maze Solver
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An interactive 3D maze built with React, TypeScript and Three.js. It generates a random maze and animates three search algorithms solving it, so you can compare how they explore.
 
-Currently, two official plugins are available:
+**Live demo:**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Cloudflare: https://maze-solver.alexmpazm.workers.dev/
+- Vercel: https://maze-solver-sigma.vercel.app/
+- Netlify: https://maze-solver-sigma.netlify.app/
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Random 25×25 maze, generated with a depth-first backtracker. A few extra walls are removed so there is more than one route.
+- Random start (green) and goal (red) cells, placed at least half the maze apart.
+- Three solvers: Breadth-first search (BFS), Depth-first search (DFS) and A*.
+- The animation shows the explored cells in purple, then the final path in orange.
+- Stats show how many cells were explored and the path length.
+- Drag to rotate the view and scroll to zoom.
 
-## Expanding the Oxlint configuration
+## Tech stack
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- [React 19](https://react.dev) for the UI and state
+- [Three.js](https://threejs.org) with [@react-three/fiber](https://r3f.docs.pmnd.rs) and [@react-three/drei](https://drei.docs.pmnd.rs) for the 3D scene
+- [Vite](https://vite.dev) for dev server and build
+- TypeScript and [Oxlint](https://oxc.rs/docs/guide/usage/linter)
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Getting started
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Then open the local URL that Vite prints.
+
+| Command           | What it does                                   |
+| ----------------- | ---------------------------------------------- |
+| `npm run dev`     | Start the dev server with hot reload           |
+| `npm run build`   | Type-check and build the site into `dist/`     |
+| `npm run preview` | Serve the built `dist/` folder locally         |
+| `npm run lint`    | Lint the code with Oxlint                      |
+
+## Project structure
+
+```
+src/
+  maze.ts     Maze generation (generateMaze) and the BFS / DFS / A* solver (solve)
+  App.tsx     UI, state and the solve animation
+  Maze3D.tsx  3D rendering of the maze, explored cells and path
+  main.tsx    App entry point
+```
+
+## Configuration
+
+The maze size is set by `COLS` and `ROWS` at the top of `src/App.tsx`. The start and goal are chosen in `generateMaze` in `src/maze.ts`.
+
+## Deployment
+
+The build output is a static site in `dist/`, so it can be hosted on any static host such as Cloudflare or Vercel. Use `npm run build` as the build command and `dist` as the output directory.
